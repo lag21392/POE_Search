@@ -1,0 +1,10 @@
+GET /challenge/divinationcards HTTP/1.1
+Host: poe.ninja
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Connection: close
+Cookie: __cfduid=d33b4959bb6497845c954fa78e0c82a121589219069; _ga=GA1.2.460042542.1589219075; _gid=GA1.2.447718366.1589219075; _gat=1; __gads=ID=edee6987a117af7e:T=1589219075:S=ALNI_MYz6WIXBt7_M9X43vgBaHxghwuPrA; _ym_uid=1589219078216220924; _ym_d=1589219078; pbjs-id5id=%7B%22ID5ID%22%3A%22ID5-ZHMOIx7PqSmOjWhTP0qLwfm0sftza1nIwKuqyt7XAA%22%2C%22ID5ID_CREATED_AT%22%3A%222020-05-11T17%3A44%3A38.902Z%22%2C%22ID5_CONSENT%22%3Atrue%2C%22CASCADE_NEEDED%22%3Afalse%2C%22ID5ID_LOOKUP%22%3Afalse%2C%223PIDS%22%3A%5B%5D%7D; pbjs-id5id_last=Mon%2C%2011%20May%202020%2017%3A44%3A39%20GMT; language=en; _ym_isad=2; _ym_visorc_57495249=b; cto_bundle=mHvbzV91cm5WSVRmT2xhQTNrMGlTNVBHY3ZUcXVpbExwNHFycXpxUGVwV2xUZTF5YzJnZHR0NmNPSFdPY1dWY1VYSmFERVhZWk54OThzV2NpaWRWcXRVVmxpeiUyQmRKVUNUQ3ZsV2ZwJTJCN1hIZldUdnMlMkJJa1pUVUFyVVdPQlg0UUkwMkpPWQ
+Upgrade-Insecure-Requests: 1
+

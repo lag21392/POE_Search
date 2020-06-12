@@ -1,0 +1,15 @@
+POST /search HTTP/1.1
+Host: poe.trade
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 943
+Origin: https://poe.trade
+Connection: close
+Referer: https://poe.trade/
+Cookie: _ga=GA1.2.1458470591.1589207216; _gid=GA1.2.698497471.1589207216; __gads=ID=838695c091b832b0:T=1589207219:S=ALNI_MbzImGc13toXUaiNiCjU7krJ-EbmQ; __qca=P0-1304699693-1589207217777; league=Delirium
+Upgrade-Insecure-Requests: 1
+
+league=Delirium&type=&base=&name=&dmg_min=&dmg_max=&aps_min=&aps_max=&crit_min=&crit_max=&dps_min=&dps_max=&edps_min=&edps_max=&pdps_min=&pdps_max=&armour_min=&armour_max=&evasion_min=&evasion_max=&shield_min=&shield_max=&block_min=&block_max=&sockets_min=&sockets_max=&link_min=&link_max=&sockets_r=&sockets_g=&sockets_b=&sockets_w=&linked_r=&linked_g=&linked_b=&linked_w=&rlevel_min=&rlevel_max=&rstr_min=&rstr_max=&rdex_min=&rdex_max=&rint_min=&rint_max=&mod_name=&mod_min=&mod_max=&mod_weight=&group_type=And&group_min=&group_max=&group_count=1&q_min=&q_max=&level_min=&level_max=&ilvl_min=&ilvl_max=&rarity=&progress_min=&progress_max=&sockets_a_min=&sockets_a_max=&map_series=&altart=&identified=&corrupted=&crafted=&enchanted=&fractured=&synthesised=&mirrored=&veiled=&shaper=&elder=&crusader=&redeemer=&hunter=&warlord=&seller=&thread=&online=x&capquality=x&buyout_min=&buyout_max=&buyout_currency=&has_buyout=&exact_currency=
