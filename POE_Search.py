@@ -9,10 +9,13 @@ import threading
 import time
 from datetime import datetime
 from datetime import timedelta
+import asyncio
+import http3
+
 
 puetoProxyS=[30000,30001,30002,30003]
 
-def preciosArticulo(tipoDeObjeto,nombreArticulo,level,quality,corrupted,links,levelRequired,proxi):
+async def preciosArticulo(tipoDeObjeto,nombreArticulo,level,quality,corrupted,links,levelRequired,proxi,tRequest):
 
         arch = open("requests.txt","r")
         post_url=arch.read()
@@ -49,9 +52,18 @@ def preciosArticulo(tipoDeObjeto,nombreArticulo,level,quality,corrupted,links,le
             url = url.replace("sockets_min=", "sockets_min=" + links)
             url = url.replace("rlevel_min=", "rlevel_min=" + levelRequired)
 
+            status="0"
+            while int(status)!=int("200"):
+                client = http3.AsyncClient()
+                resp = await client.get(url)
+                status=resp.status_code
+                '''print("preciosArticulo")
+                print(status)'''
+                await asyncio.sleep(tRequest)
 
 
-            resp=requests.get(url,timeout=20,proxies=proxi)
+
+            '''resp=requests.get(url,timeout=20,proxies=proxi)'''
 
         '''print(str(resp) + " "+url)'''
 
@@ -79,7 +91,7 @@ def preciosArticulo(tipoDeObjeto,nombreArticulo,level,quality,corrupted,links,le
 
 
 
-def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi):
+async def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi,tRequest):
     '''print(tipoDeObjeto+"____________________________________________________________________________________________________________________")'''
     requestOK = True
 
@@ -124,7 +136,15 @@ def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi):
         requestOk=False
         while not requestOk:
             try:
-                resp = requests.get(url,timeout=9,proxies=proxi)
+                status="0"
+                while int(status) != int("200"):
+                    client = http3.AsyncClient()
+                    resp = await client.get(url)
+                    status = resp.status_code
+                    '''print("buscarMejoresPreciso")
+                    print(status)'''
+                    await asyncio.sleep(tRequest)
+                '''resp = requests.get(url,timeout=9,proxies=proxi)'''
                 '''time.sleep(0.001)'''
                 pagina = BeautifulSoup(resp.content, "html.parser")
                 articulos = json.loads(pagina.text)
@@ -133,7 +153,7 @@ def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi):
             except:
                 print("error PoeTrade request para tipo "+tipoDeObjeto+" pagina: "+url)
     tiempos=[]
-    articulosMayorA = list(filter(lambda x: x.get("chaosValue") > 90, articulos["lines"]))
+    articulosMayorA = list(filter(lambda x: x.get("chaosValue") > mayorA, articulos["lines"]))
 
     for line in articulosMayorA:
 
@@ -156,11 +176,11 @@ def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi):
             precioMinimoEncontradoLista = []
             try:
 
-                precioMinimoEncontradoLista, url2 ,tiempos= preciosArticulo(tipoDeObjeto, nombreArticulo, level, quality,
-                                                                    corrupted, links, levelRequired,proxi)
+                precioMinimoEncontradoLista, url2 ,tiempos= await preciosArticulo(tipoDeObjeto, nombreArticulo, level, quality,
+                                                                    corrupted, links, levelRequired,proxi,tRequest)
 
 
-
+                '''print(str(precioMinimoEncontradoLista)+" "+str(url2)+" "+str(tiempos))'''
                 i=0
                 precioMinimoEncontrado=999999999999999999999
 
@@ -179,7 +199,7 @@ def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi):
                             else:
                                 precioComparacion = line.get("chaosValue") * porsentaje
 
-                    if tiempo.count("minutes") and int(tiempo[0:2])<30 and precioMinimoEncontrado < line.get("chaosValue") * porsentaje  :
+                    if tiempo.count("minutes") and int(tiempo[0:2])<30 and precioMinimoEncontrado < line.get("chaosValue") * porsentaje:
                         '''and precioMinimoEncontrado!=4'''
                         if precioMinimoEncontrado%1 >0:
                             '''winsound.Beep(2500, 100)'''
@@ -197,63 +217,43 @@ def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi):
                                 valudadoExalted) + "E" + "\t" + str(valuadoChaos) + "C\t" + " PrecioEncontrado: " + str(
                                 round(precioMinimoEncontrado / precioExaltedXChaos, 2)) + "E\t" + str(
                                 precioMinimoEncontrado) + "C\t" + url2)'''
+                print(".", end="")
             except:
-                print("Error")
+                print("-",end="")
+
 
     return url
 
 
 
-precioExaltedXChaos=142
+precioExaltedXChaos=139
 url=""
 tipoDeObjetoAnt=""
 
 
+puerto=None
+listaTipos = ["SkillGem", "DivinationCard", "UniqueMap", "UniqueJewel", "UniqueFlask", "UniqueWeapon","UniqueArmour", "Beast"]
+loop = asyncio.get_event_loop()
+vectorDeFunciones = []
+for tipo in listaTipos:
+    if puerto != None:
+        proxi = {'http': '127.0.0.1:' + str(puerto), 'https': '127.0.0.1:' + str(puerto)}
+    else:
+        proxi = None
+    vectorDeFunciones.append(buscarMejoresPreciso(tipoDeObjetoAnt, tipo, 0.61, 89, proxi,0))
 
 while 1:
     now = datetime.now()
     format = now.strftime('--------------Día :%d, Mes: %m, Año: %Y, Hora: %H, Minutos: %M, Segundos: %S--------------')
     print(format)
 
-    threads = list()
-    puerto=None
-    listaTipos = ["SkillGem", "DivinationCard", "UniqueMap", "UniqueJewel", "UniqueFlask", "UniqueWeapon","UniqueArmour", "Beast"]
-    for tipo in listaTipos:
-        if puerto!=None:
-            proxi={'http': '127.0.0.1:' + str(puerto), 'https': '127.0.0.1:' + str(puerto)}
-        else:
-            proxi=None
-        t = threading.Thread(target=buscarMejoresPreciso,args=(tipoDeObjetoAnt,tipo,0.51,98,proxi))
-        threads.append(t)
-        t.start()
-        if puerto!=None:
-            puerto=puerto+1
-        time.sleep(1)
+
+
+    all_groups=asyncio.gather(*vectorDeFunciones)
+    results = loop.run_until_complete(all_groups)
 
 
 
-    for i in threads:
-        i.join()
-
-
-    '''print("SkillGem____________________________________________________________________________________________________________________")
-    buscarMejoresPreciso(tipoDeObjetoAnt,"SkillGem",0.4,49)
-    print("DivinationCard--------------------------------------------------------------------------------------------------------------------")
-    buscarMejoresPreciso(tipoDeObjetoAnt,"DivinationCard",0.4,49)
-    print("Maps--------------------------------------------------------------------------------------------------------------------")
-    url=buscarMejoresPreciso(url,"Map",0.4,49)
-    print("UniqueJewel--------------------------------------------------------------------------------------------------------------------")
-    url=buscarMejoresPreciso(url,"UniqueJewel",0.4,49)
-    print("UniqueFlask--------------------------------------------------------------------------------------------------------------------")
-    url=buscarMejoresPreciso(url,"UniqueFlask",0.4,49)
-    print("UniqueWeapon--------------------------------------------------------------------------------------------------------------------")
-    url=buscarMejoresPreciso(url,"UniqueWeapon",0.4,49)
-    print("UniqueArmour--------------------------------------------------------------------------------------------------------------------")
-    url=buscarMejoresPreciso(url,"UniqueArmour",0.4,49)
-    print("UniqueAccessory--------------------------------------------------------------------------------------------------------------------")
-    url=buscarMejoresPreciso(url,"UniqueAccessory",0.4,49)
-    print("Beast--------------------------------------------------------------------------------------------------------------------")
-    url=buscarMejoresPreciso(url,"Beast",0.4,49)'''
 
 
 
