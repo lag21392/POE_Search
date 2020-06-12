@@ -11,7 +11,7 @@ from datetime import datetime
 from datetime import timedelta
 import asyncio
 import http3
-
+import multiprocessing
 
 puetoProxyS=[30000,30001,30002,30003]
 
@@ -135,23 +135,24 @@ async def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi,tRequ
     if url != urlAnt or urlAnt == "":
         requestOk=False
         while not requestOk:
-            try:
-                status="0"
-                while int(status) != int("200"):
-                    client = http3.AsyncClient()
-                    resp = await client.get(url)
-                    status = resp.status_code
-                    '''print("buscarMejoresPreciso")
-                    print(status)'''
-                    await asyncio.sleep(tRequest)
-                '''resp = requests.get(url,timeout=9,proxies=proxi)'''
-                '''time.sleep(0.001)'''
-                pagina = BeautifulSoup(resp.content, "html.parser")
-                articulos = json.loads(pagina.text)
-                requestOk=True
+            '''try:'''
+            status="0"
+            while int(status) != int("200"):
+                client = http3.AsyncClient()
 
-            except:
-                print("error PoeTrade request para tipo "+tipoDeObjeto+" pagina: "+url)
+                resp = await client.get(url)
+                status = resp.status_code
+                '''print("buscarMejoresPreciso")
+                print(status)'''
+                await asyncio.sleep(tRequest)
+            '''resp = requests.get(url,timeout=9,proxies=proxi)'''
+            '''time.sleep(0.001)'''
+            pagina = BeautifulSoup(resp.content, "html.parser")
+            articulos = json.loads(pagina.text)
+            requestOk=True
+
+            '''except:
+                print("error PoeTrade request para tipo "+tipoDeObjeto+" pagina: "+url)'''
     tiempos=[]
     articulosMayorA = list(filter(lambda x: x.get("chaosValue") > mayorA, articulos["lines"]))
 
@@ -207,7 +208,7 @@ async def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi,tRequ
                             winsound.Beep(2500, 100)
                             winsound.Beep(2500, 100)
                             winsound.Beep(2500, 100)
-
+                        print("")
                         print("->T:" +str(int(tiempo[0:2]))+" O: "+tipoDeObjeto+" "+ nombreArticulo + "\t" + "PrecioRecomendado: " + str(
                             valudadoExalted) + "E" + "\t" + str(valuadoChaos) + "C\t" + " PrecioEncontrado: " + str(
                             round(precioMinimoEncontrado / precioExaltedXChaos, 2)) + "E\t" + str(
@@ -217,9 +218,27 @@ async def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi,tRequ
                                 valudadoExalted) + "E" + "\t" + str(valuadoChaos) + "C\t" + " PrecioEncontrado: " + str(
                                 round(precioMinimoEncontrado / precioExaltedXChaos, 2)) + "E\t" + str(
                                 precioMinimoEncontrado) + "C\t" + url2)'''
+
                 print(".", end="")
+                '''if (cantidadDeRequest.value/100)==0:
+                    print("")
+                    print(".", end="")
+                else:
+                    print(".", end="")
+
+                cantidadDeRequest.value=cantidadDeRequest.value+1'''
+
+
             except:
-                print("-",end="")
+                print(",", end="")
+                '''if (cantidadDeRequest.value / 100) == 0:
+                    print("")
+                    print("-", end="")
+                else:
+                    print("-", end="")
+
+                cantidadDeRequest.value = cantidadDeRequest.value + 1'''
+
 
 
     return url
@@ -229,6 +248,10 @@ async def buscarMejoresPreciso(urlAnt,tipoDeObjeto,porsentaje,mayorA,proxi,tRequ
 precioExaltedXChaos=139
 url=""
 tipoDeObjetoAnt=""
+
+
+
+
 
 
 puerto=None
@@ -242,6 +265,7 @@ for tipo in listaTipos:
         proxi = None
     vectorDeFunciones.append(buscarMejoresPreciso(tipoDeObjetoAnt, tipo, 0.61, 89, proxi,0))
 
+all_groups=asyncio.gather(*vectorDeFunciones)
 while 1:
     now = datetime.now()
     format = now.strftime('--------------Día :%d, Mes: %m, Año: %Y, Hora: %H, Minutos: %M, Segundos: %S--------------')
@@ -249,7 +273,7 @@ while 1:
 
 
 
-    all_groups=asyncio.gather(*vectorDeFunciones)
+
     results = loop.run_until_complete(all_groups)
 
 
